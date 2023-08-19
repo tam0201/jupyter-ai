@@ -5,6 +5,7 @@ from langchain.embeddings import (
     CohereEmbeddings,
     HuggingFaceHubEmbeddings,
     OpenAIEmbeddings,
+    LlamaCppEmbeddings
 )
 from langchain.embeddings.base import Embeddings
 from pydantic import BaseModel, Extra
@@ -88,3 +89,14 @@ class HfHubEmbeddingsProvider(BaseEmbeddingsProvider, HuggingFaceHubEmbeddings):
     pypi_package_deps = ["huggingface_hub", "ipywidgets"]
     auth_strategy = EnvAuthStrategy(name="HUGGINGFACEHUB_API_TOKEN")
     registry = True
+
+class MLOpsEmbeddingsProvider(BaseEmbeddingsProvider, LlamaCppEmbeddings):
+    id = "mlops"
+    name = "MLOps"
+    models = ["mlops_embeddings_model"]
+    model_id_key = "model"
+    pypi_package_deps = ["llamacpp"]
+    auth_strategy = None
+    registry = True
+    
+   

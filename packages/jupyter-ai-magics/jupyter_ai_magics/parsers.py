@@ -4,7 +4,7 @@ import click
 from pydantic import BaseModel
 
 FORMAT_CHOICES_TYPE = Literal[
-    "code", "html", "image", "json", "markdown", "math", "md", "text"
+    "code", "sql", "html", "image", "json", "markdown", "math", "md", "text"
 ]
 FORMAT_CHOICES = list(get_args(FORMAT_CHOICES_TYPE))
 FORMAT_HELP = """IPython display to use when rendering output. [default="markdown"]"""

@@ -5,22 +5,24 @@ from .embedding_providers import (
     CohereEmbeddingsProvider,
     HfHubEmbeddingsProvider,
     OpenAIEmbeddingsProvider,
+    MLOpsEmbeddingsProvider
 )
 from .exception import store_exception
 from .magics import AiMagics
 
 # expose model providers on the package root
 from .providers import (
-    AI21Provider,
-    AnthropicProvider,
-    BaseProvider,
-    BedrockProvider,
-    ChatOpenAINewProvider,
-    ChatOpenAIProvider,
-    CohereProvider,
-    HfHubProvider,
-    OpenAIProvider,
-    SmEndpointProvider,
+    # AI21Provider,
+    # AnthropicProvider,
+    # BaseProvider,
+    # BedrockProvider,
+    # ChatOpenAINewProvider,
+    # ChatOpenAIProvider,
+    # CohereProvider,
+    GPT4AllProvider,
+    # HfHubProvider,
+    # OpenAIProvider,
+    # SmEndpointProvider,
 )
 
 

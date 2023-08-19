@@ -14,6 +14,7 @@ from langchain.llms import (
     Anthropic,
     Bedrock,
     Cohere,
+    GPT4All,
     HuggingFaceHub,
     OpenAI,
     OpenAIChat,
@@ -69,7 +70,14 @@ class MultilineTextField(Field):
     type: Literal["text-multiline"] = "text-multiline"
 
 
-Field = Union[TextField, MultilineTextField]
+
+class IntegerField(BaseModel):
+    type: Literal["integer"] = "integer"
+    key: str
+    label: str
+
+
+Field = Union[TextField, MultilineTextField, IntegerField]
 
 
 class BaseProvider(BaseModel):
@@ -192,7 +200,35 @@ class CohereProvider(BaseProvider, Cohere):
     async def _acall(self, *args, **kwargs) -> Coroutine[Any, Any, str]:
         return await self._call_in_executor(*args, **kwargs)
 
+class GPT4AllProvider(BaseProvider, GPT4All):
+    def __init__(self, **kwargs):
+        model = kwargs.get("model_id")
+        if model.startswith("ggml-gpt4all-j"):
+            kwargs["backend"] = "gptj"
+        else:
+            kwargs["backend"] = "llama"
 
+        kwargs["allow_download"] = False
+        n_threads = kwargs.get("n_threads", None)
+        if n_threads is not None:
+            kwargs["n_threads"] = max(int(n_threads), 1)
+        super().__init__(**kwargs)
+
+    id = "mlops"
+    name = "MLOps"
+    models = [       
+        "magic_commands_ai",
+        "magic_commands_ai_2",
+        "generative_chatbot",
+    ]
+    model_id_key = "model"
+    pypi_package_deps = ["gpt4all"]
+    auth_strategy = None
+    fields = [IntegerField(key="n_threads", label="CPU thread count (optional)")]
+
+    async def _acall(self, *args, **kwargs) -> Coroutine[Any, Any, str]:
+        return await self._call_in_executor(*args, **kwargs)
+    
 HUGGINGFACE_HUB_VALID_TASKS = (
     "text2text-generation",
     "text-generation",

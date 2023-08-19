@@ -28,10 +28,9 @@ from .parsers import (
 from .providers import BaseProvider
 
 MODEL_ID_ALIASES = {
-    "gpt2": "huggingface_hub:gpt2",
-    "gpt3": "openai:text-davinci-003",
-    "chatgpt": "openai-chat:gpt-3.5-turbo",
-    "gpt4": "openai-chat:gpt-4",
+    "chatbot": "mlops:mlops_generative_chatbot",
+    "code": "mlops:magic_commands_ai",
+    "code_2": "mlops:magic_commands_ai_2"
 }
 
 
@@ -69,6 +68,7 @@ class Base64Image:
 
 DISPLAYS_BY_FORMAT = {
     "code": None,
+    "sql": None,
     "html": HTML,
     "image": Base64Image,
     "markdown": Markdown,
@@ -94,7 +94,8 @@ To see a list of models you can use, run `%ai list`"""
 
 
 PROMPT_TEMPLATES_BY_FORMAT = {
-    "code": "{prompt}\n\nProduce output as source code only, with no text or explanation before or after it.",
+    "code": "{prompt}\n\nBe a data scientist experts, perform following task and return the code only.",
+    "sql": "{prompt}\n\nAs a senior analyst, write a detailed and correct Postgres sql query to answer the above analytical question.",
     "html": "{prompt}\n\nProduce output in HTML format only, with no markup before or afterward.",
     "image": "{prompt}\n\nProduce output as an image only, with no text before or after it.",
     "markdown": MARKDOWN_PROMPT_TEMPLATE,
@@ -427,7 +428,7 @@ class AiMagics(Magics):
         DisplayClass = DISPLAYS_BY_FORMAT[display_format]
 
         # if the user wants code, add another cell with the output.
-        if display_format == "code":
+        if display_format == "code" or display_format == "sql":
             # Strip a leading language indicator and trailing triple-backticks
             lang_indicator = r"^```[a-zA-Z0-9]*\n"
             output = re.sub(lang_indicator, "", output)
@@ -549,6 +550,9 @@ class AiMagics(Magics):
         if provider_id == "openai-chat":
             self._append_exchange_openai(prompt, output)
 
+        if provider_id == "mlops":
+            output = output.replace("<|im_start|> assistant", "").replace("<|im_end|>", "")
+        
         md = {"jupyter_ai": {"provider_id": provider_id, "model_id": local_model_id}}
 
         return self.display_output(output, args.format, md)
